@@ -596,7 +596,8 @@ public class Employee extends Person {
 }
 ```
 
-Scala类可以扩展Java类。这种情况下它的主构造器必须调用Java超类的某一个构造方法。如：```
+Scala类可以扩展Java类。这种情况下它的主构造器必须调用Java超类的某一个构造方法。如：
+```
 class Square(x: Int, y: Int, width: Int) extends java.awt.Rectangle(x,y,width,width)
 ```
 
@@ -686,4 +687,54 @@ AnyRef下的eq方法检查两个引用是否指向同一个对象。实现一个
 
 在应用程序中，通常使用==操作符即可，不需直接调用eq或equals，对于引用类型而言，在做完必要的null检查后，会调用equals方法。
 
+## 第9章 文件和正则表达式
+要点：
+1. Source.fromFile(...).getLines.toArray 输出文件的所有行。
+2. Source.fromeFile(...).mkString 以字符串形式输出文件内容。
+3. str.toInt, str.toDouble
+4. PrintWrinter
 
+
+## 第10章 特质 （Trait）
+要点：
+1. 类可以实现任意数量的trait。
+2. trait可以要求实现它们的类具备特定的字段、方法或超类。
+3. Scala的trait可以提供方法和字段的实现。（不同于Java接口）
+4. 多个trait叠加在一起时应该注意顺序，其方法先被执行的trait排在后面。
+
+### 10.1 没有多重继承
+多重继承代价较高，可能需要解决方法冲突等问。因此Scala和Java一样不支持多重继承。
+
+trait可以同时拥有抽象方法和具体方法，类可以实现多个特质。
+
+### 10.2 当作interface使用的trait
+特质中未被实现的方法默认是抽象的，无需声明为abstract。
+```
+trait Loggeer{
+    def log(msg: String)
+}
+
+class ConsoleLogger extends Logger { //用extends而不是implements
+    def log(msg: String){ //重写trait的抽象方法时，不需要使用override关键字
+        println(msg)
+    }
+}
+```
+如果需要多个trait，可以用with关键字添加额外的trait：
+`class ConsoleLogger extends Logger with Cloneable with Serializable`
+
+### 10.3 带有具体实现的trait
+trait中的方法不一定是抽象的，可以做具体实现。
+
+如下代码声明并使用一个特质：
+```
+trait ConsoleLogger{
+    def log(msg: String) { printl(msg)}
+}
+
+class SavingsAccount extends Account with ConsoleLogger {
+    def withdraw(amount: Double){
+        if(amount > balace) log("Insufficient funds")
+    }
+}
+```
