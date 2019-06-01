@@ -8,6 +8,7 @@ if(x>0) 1 else ()
 ```
 
 ### 2.2 语句终止
+
 分号，同一行写多条语句时必须有，其他情况可有可无。
 
 ### 2.3 块表达式和赋值
@@ -738,3 +739,83 @@ class SavingsAccount extends Account with ConsoleLogger {
     }
 }
 ```
+
+### 10.4 带有trait的对象
+```
+trait Logged {
+    def log(msg: String){ }
+}
+
+class SavingAccount extends Account with Logged {
+    def withdraw(amount: Double){
+        if(amount: Double){
+            if(amount > balance) log("Insufficient funds")
+            else ...
+        }
+        ...
+    }
+}
+
+trait ConsoleLogger extends Logged {
+    override def log(msg: String){  println(msg)    }
+}
+
+//在构造不同对象的时候加入不同的trait
+val acct = new SavingAccount with ConsoleLogger
+
+val acct2 = new SavingsAccount with FileLogger
+
+```
+
+### 10.5 叠加在一起的trait
+类或对象可以添加多个互相调用的trait，其调用顺序从最后一个开始。
+
+### 10.6 在trait中重写抽象方法
+
+### 10.7 当作富接口使用的trait
+
+## 第11章 操作符
+要点：
+1. 一元和二元操作符实际上是方法调用。
+2. 操作符优先级取决于第一个字符，而结合性取决于最后一个字符。
+3. 提取器从输入中提取元组或值的序列。
+
+### 11.1 标识符
+包括变量、函数、类的名称。
+
+Scala在选择标识符时比Java有更多选择，但最好还是传统一点（个人喜好）。
+
+设计标识符时要尽量易读，易于输入。
+
+### 11.2 中置操作符
+`a 标识符 b`
+
+实际上是一个方法调用 ：
+```
+1 to 10
+1.to(10)
+```
+
+### 11.3 一元操作符
+`a 标识符`等同于a.标识符()，如：
+```
+a toString
+1.toString()
+```
+
+`+`,`-`,`!`,`~`可以作为前置操作符出现在参数之前。
+
+### 11.4 赋值操作符
+```
+a 操作符= b
+a = a 操作符 b
+
+a += b
+a = a + b
+```
+
+### 11.5 优先级
+后置操作符的优先级低于中置操作符。
+
+
+### 11.6 结合性
