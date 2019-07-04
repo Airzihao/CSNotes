@@ -827,4 +827,98 @@ a = a + b
 - Scala列表要么是空的，要么拥有一头一尾，其中尾部本身又是一个列表。
 - 集是无先后次序的集合。
 - 用LinkedHashSet来保留插入顺序，或者用SortedSet来按顺序进行迭代。
-- +将蒜素添加到无先后次序的集合中，+:和:+向前或向后追加到序列；++将两个集合串接在一起；-和--移除元素。
+- +将元素添加到无先后次序的集合中，+:和:+向前或向后追加到序列；++将两个集合串接在一起；-和--移除元素。
+
+### 13.1 主要的集合特质
+Seq有先后次序，如数组或列表。
+
+Set是没有先后次序的，在SortedSet中，元素以某种排过序的顺序被访问。
+
+Map是一组（键，值）对偶。
+
+### 13.2 可变和不可变集合
+- **可变**：scala.collection.mutable._ 
+- **不可变**： scala.collection.immutable._
+同时继承自scala.collection._
+
+### 13.3 序列
+##### 不可变序列
+- Vector
+- Range
+- List
+- Stream
+- Stack
+- Queue
+
+##### 可变序列：
+- ArrayBuffer
+- Stack
+- Queue
+- Priority Queue
+- LinkedList
+- Double LinkedList
+
+Vector是ArrayBuffer的不可变版本：一个带下标的序列，支持快速随机访问。Vector是以树形结构实现的。
+
+Range表示整数序列，只存储起始值、结束值和增值，可以用to和until方法构造Range对象。
+
+### 13.4 列表
+在Scala中，列表要么是Nil，要么是一个head加上一个tail，而tail又是一个列表。
+如：
+```
+val digits = List(4,2) 
+//digits.head = 4
+//digits.tail = List(2)
+//digits.tail.tail = Nil
+```
+`::`操作符放在头部或尾部可以得到新的列表。并且遍历列表使用递归方法会非常自然，如：
+```
+9::List(4,2)
+
+def sum(lst: List[Int]): Int = {
+    if(lst == Nil) 0 else lst.head + sum(lst.tail)
+}
+```
+### 13.5 可变列表
+```
+// set negative to 0
+val lst = scala.collection.mutable.LinkedList(1, -2, 7, -9)
+var cur = lst
+while(cur != Nil) {
+    if(cur.elem < 0 cur.elem = 0)
+    cur = cur.next
+}
+
+// 隔一个删除
+var cur = lst
+while(cur != Nil && cur.next != Nil) {
+    cur.next = cur.next.next
+    cur = cur.next
+}
+```
+Tips: 如果想把列表中的某个节点变为列表的最后一个节点，不能将next引用设为Nil或null，应该设为**LinkedList.empty**。
+
+### 13.6 Set
+缺省情况下，Set是以哈希集实现的，其元素根据hashCode方法的值进行组织。Set不保持元素的顺序，因为在哈希集中查找元素比在数组和列表中快得多。
+
+LinkedHashSet可以记住元素插入的顺序，它会维护一个链表来实现。
+如果想按照已排序的顺序来访问集合中的元素，可以用SortedSet，它是用红黑树实现的:
+```
+val weekdays = scala.collection,mutable,LinkedHashSet("Mo","Tu","We","Th","Fr")
+val scala.collection.immutable.SortedSet(1, 2, 3, 4, 5, 6)
+```
+一些常见的集合操作：`union`、`intersect`、`diff`
+一般而言，`+`用于将元素添加到无先后次序的集合，而`+:`和`:+`将元素添加到有先后次序的集合的开头或末尾。
+
+### 13.7 常用操作符：
+operator | description | Collection Type
+---|---|---
+coll :+ elem | 追加 | Seq
+coll + elem  | 添加 | Set、Map
+coll - elem | | Set、Map、ArrayBuffer
+coll ++ coll2 | 与coll同类型的集合，包含两个集合的元素 | Iterable
+coll -- coll2 | | Set、Map、ArrayBuffer
+elem::lst | 被向前追加了元素或给定列表的列表 | List
+list ::: list2 | 等同于list ++： list2 | List
+set \| set2  set & set2 set &~ set2 | 两个集合的并、交、差 | Set
+coll += elem 
