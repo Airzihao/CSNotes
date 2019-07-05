@@ -921,4 +921,27 @@ coll -- coll2 | | Set、Map、ArrayBuffer
 elem::lst | 被向前追加了元素或给定列表的列表 | List
 list ::: list2 | 等同于list ++： list2 | List
 set \| set2  set & set2 set &~ set2 | 两个集合的并、交、差 | Set
-coll += elem 
+coll += elem  coll += (e1,e2,...) coll ++= coll2(`+`可以换成`-`)| 添加或移除指定元素 | 可变集合
+elem +=: coll coll2 ++=: coll|向前追加给定元素或集合修改coll | ArrayBuffer
+
+一般而言，`+`用于将元素添加到无先后次序的集合，而`+:`和`:+`分别将元素添加到有先后次序的集合的开头或末尾。
+
+**右结合**的操作符都返回新的集合，不会修改原有的集合，而可变集使用的是左结合的操作元。
+
+### 13.8 常用方法
+
+##### 表13-2 Iterable特质的常用方法
+Method | Description
+---|---
+head, last, headOption, lastOption | 返回第一个或最后一个元素，或用Option形式返回
+tail, init | 返回除第一个或最后一个元素以外的部分
+length, isEmpty | 略
+map(f), foreach(f), flatMap(f), collect(pf) | 将函数应用到所有元素
+reduceLeft(op), reduceRight(op), foldLeft(init)(op), foldRight(init)(op) | 以给定顺序将二元操作应用到所有元素
+reduce(op), fold(init)(op), aggregate(init)(op,combineOp) |以非特定顺序将二元操作符应用到所有元素
+sum, product, max, min | 返回该值（前提是可以隐式转换）
+count(pred), forall(pred), exists(pred) | 返回满足前提表达式的元素计数； Boolean值； Boolean值；
+filter(pred), filterNot(pred), partition(pred) | 返回所有满足前提表达式的元素；所有不满足前提表达式的元素； 这两组元素组成的对偶；
+takeWhile(pred), dropWhile(pred), span(pred) | 返回满足前提表达式的一组元素（直到遇见第一个不满足的元素）；所有其他元素；或者这两组元素组成的对偶。
+take(n), drop(n), splitAt(n) | 返回前n个元素； 所有其他元素；这两组元素组成的对偶。
+takeRight(n), dropRight(n) | 返回最后n个元素；或者其他所有元素。
