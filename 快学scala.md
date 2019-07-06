@@ -945,3 +945,63 @@ filter(pred), filterNot(pred), partition(pred) | 返回所有满足前提表达�
 takeWhile(pred), dropWhile(pred), span(pred) | 返回满足前提表达式的一组元素（直到遇见第一个不满足的元素）；所有其他元素；或者这两组元素组成的对偶。
 take(n), drop(n), splitAt(n) | 返回前n个元素； 所有其他元素；这两组元素组成的对偶。
 takeRight(n), dropRight(n) | 返回最后n个元素；或者其他所有元素。
+slice(from, to)|返回从from到to区间内的所有元素。
+zip(coll2)、zipAll(coll2, fill, fill2)、 zipWityIndex| 返回由本集合的元素和另一个集合的元素组成的对偶。
+grouped(n)、sliding(n) | 返回长度为n的子集合迭代器；grouped产出下标为0 until n 的元素，然后是下标为n until 2*n的元素，以此类推；sliding产出下标为0 until n的元素，然后是下标为1 until n+1 的元素，以此类推。
+mkString(before, between, after)、addString(sb, before, between, after) | 由所有元素组成的字符串，将给定字符串分别添加到首个元素之前、每个元素之间，以及最后一个元素之后。第二个方法将字符串追加到stringbuilder当中
+toIterable, toSeq, toIndexedSeq, toArray, toList, toStream, toSet, toMap | 将集合转换成指定类型的集合
+copyToArray(arr), copyToArray(arr, start, length), copyToBuffer(buf) | 将元素拷贝到数组或缓冲当中
+
+##### Seq在Iterable基础上添加的方法
+Method | Description
+---| ---
+contains(elem), containsSlice(seq), startsWith(seq), endsWith(seq) | 返回布尔值
+indexOf(elem), lastIndexOf(elem), indexOfSlice(seq), lastIndexOfSlice(seq) | 返回对应下标
+indexWhere(pred) | 返回满足pred的首个元素的下标
+prefixLength(pred), segmentLength(pred,n)|返回满足pred的最长元素序列的长度，从当前序列的下标0或n开始查找
+padTo(n, fill) | 返回当前序列的一个拷贝，将fill的内容向后追加，知道新序列的长度达到n
+intersect(seq), diff(seq)|返回多重集合的交集，或序列之间的差异
+reverse | 当前序列的反向
+sorted, sortWith(less), sortBy(f) 使用元素本身的大小，二元函数less，或者将每个元素映射成一个带先后次序的类型的值的函数f，对当前序列进行排序后的新序列。
+permutations, combinations(n) | 返回一个遍历所有排列或组合的迭代器
+
+这些方法都不改变原有集合，返回一个与原集合类型相同的新集合。
+
+### 13.9 将函数映射到集合
+`map`,`flatMap`
+```
+names.map(_.toUpperCase)
+names,flatMap(ulcase)
+如果使用flatMap并传入返回Option的函数的话，最终返回的集合将包括所有的值v，前提是函数返回Some(v)
+```
+`collect`方法用于oartial function --- 那些并没有对所有可能的输入进行定义的函数，他产出被定义的所有参数的函数值的集合。
+
+### 13.10 化简、折叠和扫描
+```
+c.reduceLeft(op)
+c.reduceRight(op)
+c.foldLeft(init)(op)
+scanLeft
+scanRight
+```
+
+### 13.11 拉链操作
+```
+val prices = List(5.0, 20.0, 9.95)
+val quantities = List(10, 2, 1)
+prices zip quantities
+得到：
+List[(Double, Int)] = List((5.0, 10), (20.0, 2), (9.95, 1))
+
+// 其他用法：
+(prices zip quantities) map {p => p._1 * p._2}
+((prices zip quatities) map {p => p._1 * p._2}).sum
+//如果一个集合比另一个短，那么集合中的对偶数量与较短的集合中元素数量相同。
+//zipAll方法可以指定较短列表中的缺省值。
+List((5.0, 20.0, 9.95).zipAll(List(10,2), 0.0, 1)
+//将得到：
+List((5.0, 10), (20.0, 2), (9.95, 1))
+zipWithIndex 方法返回对偶的列表，每个对偶中第二个组成部分是每个元素的下标。
+```
+### 13.12 迭代器
+Scala并不提倡使用迭代器，
