@@ -1004,4 +1004,117 @@ List((5.0, 10), (20.0, 2), (9.95, 1))
 zipWithIndex 方法返回对偶的列表，每个对偶中第二个组成部分是每个元素的下标。
 ```
 ### 13.12 迭代器
-Scala并不提倡使用迭代器，
+Scala并不提倡使用迭代器，通过前两节的方法可以更容易地获取结果。（是否便于Spark化？）
+
+### 13.13 流
+流是一个尾部被懒计算的不可变列表，只有需要时才会被计算。和迭代器一样，只有在需要的时候才去取元素，不会付出计算剩余元素的代价。
+```
+def numsFrom(n: BigInt): Stream[BigInt] = n #:: numsFrom(n + 1)
+```
+`#::`操作符很像是列表的`::`操作符，不过它构建出的是一个流。
+
+当调用 val tenOrMore = numsFrom(10)时，得到的是一个被显示为Stream(10, ?) 的流对象。其尾部未被求值。
+
+### 13.14 懒视图
+略
+
+### 13.15 与Java集合的互操作
+```
+import scala.collection.JavaConversions._
+val props: scala.collection.mutable.Map[String, String] = System.getProperties()
+```
+
+### 13.16 线程安全的集合
+`SynchronizedBuffer`,`SynchronizedMap`,`SynchronizedPriorityQueue`,`SynchronizedSet`,`SynchronizedStack`
+
+通常说来，如果想保证线程安全，可以用java.util.concurrent包中的某个类。比如，多个线程共享一个Map, 就用`ConcurrentHashMap`或`ConcurrentSkipListMap`这比用同步方式执行所有方法的映射更为高效。
+
+### 13.17 并行集合
+Scala为并行提供了很多方便，比如对一个大型集合coll求和，只需要`coll.par.sum`即可。
+
+并不是所有的方法都可以并行化。
+
+## 第14章 模式匹配和样例类
+本章要点：
+- match表达式不会意外掉入下一个分支。
+- 如果没有成功匹配，会抛出MatchError，可以用case_避免。
+- 模式可以包含一个随意定义的条件，称作守卫。
+- 可以对表达式的类型进行匹配，而且应该优先选择模式匹配而不是isInstanceOf/asInstanceOf。
+- 可以匹配数组、元组和样例类的模式，然后将匹配到的不同部分绑定到变量。
+- **在for表达式中，不能匹配的情况会被安静地跳过。**
+- 样例类是编译器会为之自动产出模式匹配所需要的方法的类。
+- 样例类继承层级中的公共超类应该是sealed的。
+- 用Option来存放那些不确定是否存在的值，这会比null更安全。
+
+### 14.1 match
+在类C语言中，必须在每个分支的末尾显式地使用break语句来退出switch，否则将掉入下一分支。
+```
+sign = ch match {
+    case '+' => 1
+    case '-' => -1
+    case _ => 0
+}
+```
+
+### 14.2 守卫
+Scala的模式中可以包括随意定义的条件,这叫做守卫，守卫可以是任何Boolean条件：
+```
+ch match{
+    case '+' => sign = 1
+    case _ if Character.isDigit(ch) -> digit = Character.digit(ch, 10) 
+}
+```
+
+### 14.3 模式中的变量
+如果case关键字后边跟着一个变量名，那么匹配的表达式会被赋给那个变量：
+```
+str(i) match {
+    case ch => digit = Character.digit(ch, 10)
+}
+```
+另，scala中变量必须以小写字母开头，如果某个变量以小写字母开头，则应该将它包在反括号里，如： \`pi\`
+
+### 14.4 类型模式
+可以用于替代isInstanceOf:
+```
+obj match {
+    case x: Int => x
+    case s: String => Integer.parseInt(s)
+    case _: BigInt => Int.MaxValue
+    case + => 0
+}
+```
+
+当匹配类型的时候必须给出变量名，否则将会用对象本身去匹配。
+
+### 14.5 匹配数组、列表和元组
+要匹配数组的内容，可以在模式中使用Array表达式，List和元组同理。
+```
+arr match {
+    //匹配包含0的数组
+    case Array(0) => "0"
+
+    //匹配带有两个元素的数组
+    case Array(x, y) => x + " " + y
+    
+    //匹配任何以0开始的数组
+    case Array(0, _*) => "0 ..."
+    case + => "something else"
+}
+
+lst match {
+    case 0 :: Nil => "0"
+    case x :: y :: Nil => x + " " + y
+    case 0 :: tail => "0 ..."
+    case _ => "something else"
+}
+
+pair match {
+    case (0, _) => "0 ..."
+    case (y, 0 ) => y + " 0"
+    case _ => "neither is 0"
+}
+```
+
+### 14.6 提取器
+
