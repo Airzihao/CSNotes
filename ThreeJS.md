@@ -180,3 +180,5 @@ THREE.Mesh = function ( geometry, material )
 - geometry：是一个THREE.Geometry类型的对象,他是一个包含顶点和顶点之间连接关系的对象。
 - material：就是定义的材质。有了材质就能够让模型更好看，材质会影响光照、纹理对Mesh的作用效果。
 
+
+
