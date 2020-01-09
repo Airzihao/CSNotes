@@ -1118,3 +1118,23 @@ pair match {
 
 ### 14.6 提取器
 
+### 14.7 变量声明中的模式
+```
+val (x, y) = (1, 2)
+val (q, r) = BigInt(10) /% 3
+```
+
+### 14.8 for表达式中的模式
+在for表达式中，失败的匹配将会被安静地忽略。
+```
+for ((k, "") <- System.getProperties())
+    println(k)
+```
+
+### 14.9 样例类
+样例类是一种特殊的类，经过优化以被用于模式匹配。
+```
+case class Dollar(value: Double) extends Amount
+case object Nothing extends Amount //可以用针对单例的样例对象
+```
+- 构造器中的每一个参数
